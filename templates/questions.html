@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    </head>
+    <body onload="bodyLoad()" style="padding: 10px;">
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <h3>Type your answer to the question in the box and press enter or click submit.<br>If you give up, you can reload the page.</h3>
+                </div>
+            </div>
+            {# previous questions #}
+            {% for question in successful_questions %}
+                {# question #}
+                <div class="row">
+                    <div class="col">
+                        <p>{{ question[1] }}<p>
+                    </div>
+                </div>
+                {# answer #}
+                <div class="row">
+                    <div class="col">
+                        <p>The answer was <b>{{ question[0] }}</b></p>
+                    </div>
+                </div>
+                <hr>
+            {% endfor %}
+
+            {# no more questions #}
+            {% if has_more_questions %}
+                <div class="row">
+                    <div class="col">
+                        <p>{{ current_question[1] }}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <input type="text" id="response" placeholder="Enter your answer" onclick="this.select()" class="form-control">
+                    </div>
+                    <div class="col">
+                        <button onclick="checkAnswer()" class="btn btn-primary">Submit</button>
+                    </div>
+                </div>
+            {% else %}
+                <div class="row">
+                    <div class="col">
+                        <p>Could not find any more questions for you.</p>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        <script>
+            //check current response to the question
+            function checkAnswer() {
+                var userResponse = $("#response").val().toLowerCase();
+                var answer = "{{ current_question[0] | safe }}".toLowerCase();
+                if (userResponse == answer) {
+                    //loading sign while getting next data
+                    addLoading();
+                    //request next question from server
+                    $.ajax({
+                        url: "/questions",
+                        method: "GET",
+                        data: {
+                            session_id: "{{ session_id }}"
+                        },
+                        success: function(response) {
+                            //overwrite page
+                            document.open();
+                            document.write(response);
+                            document.close();
+                        }
+                    });
+                } else {
+                    //wrong answer
+                    // alert("Incorrect")
+                    addWrongAnswer();
+                    $("#response").select();
+                }
+            }
+
+            //allow enter press in place of submit button click
+            $("#response").keyup(function(event) {
+                if (event.keyCode === 13) {
+                    checkAnswer();
+                }
+            });
+
+            //to be executed when the page loads
+            function bodyLoad() {
+                //select the text box for instant typing
+                $('#response').select();
+                //scroll to the bottom
+                jumpToPageBottom();
+            }
+
+            //loading banner
+            function addLoading() {
+                var loadingBanner = $('<div class="alert alert-primary" role="alert">Loading...</div>');
+                $("body").prepend(loadingBanner);
+                loadingBanner.css("display", "none")
+                loadingBanner.css("position", "sticky");
+                loadingBanner.css("top", "0");
+                loadingBanner.css("zIndex", "100");
+                loadingBanner.slideDown();
+            }
+
+            //incorrect answer banner
+            function addWrongAnswer() {
+                var wrongBanner = $('<div class="alert alert-danger" role="alert">Incorrect</div>');
+                $("body").prepend(wrongBanner);
+                wrongBanner.css("display", "none")
+                wrongBanner.css("position", "sticky");
+                wrongBanner.css("top", "0");
+                wrongBanner.css("zIndex", "100");
+                wrongBanner.slideDown();
+
+                //slide back up
+                setInterval(function() {
+                    wrongBanner.slideUp().done(function() {
+                        wrongBanner.remove();
+                    });
+                }, 5000);
+            }
+
+            //scroll to the bottom of the page when loaded
+            function jumpToPageBottom() {
+                $('html, body').scrollTop($(document).height() - $(window).height());
+            }
+        </script>
+    </body>
+</html>

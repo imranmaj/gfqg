@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <script>
+            function addLoading() {
+                var loadingBanner = $('<div class="alert alert-primary" role="alert">Processing your text...</div>');
+                $("body").prepend(loadingBanner);
+                loadingBanner.css("display", "none")
+                loadingBanner.css("position", "sticky");
+                loadingBanner.css("top", "0");
+                loadingBanner.css("zIndex", "100");
+                loadingBanner.slideDown();
+            }
+        </script>
+    </head>
+    <body style="padding: 10px;">
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <h1>GFQG</h1>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col">
+                    <h3>Gap Filled Question Generator</h3>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col">
+                    <p>
+                        Paste some text in the box below and press submit.
+                        I'll ask you some questions about it.
+                    </p>
+                </div>
+            </div>
+
+            <form action="/generate" method="POST">
+                <div class="row">
+                    <div class="col">
+                        <textarea name="data" rows="10" cols="5" class="form-control"></textarea>
+                    </div>
+                </div>
+
+                <br>
+                
+                <div class="row">
+                    <div class="col"></div>
+                        <input type="submit" class="btn btn-primary" onclick="addLoading()">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </body>
+</html>
