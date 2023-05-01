@@ -1,4 +1,4 @@
-Flask==1.0.2
+Flask==2.3.2
 nltk==3.4.5
 colorama==0.4.1
 rake_nltk==1.0.4
